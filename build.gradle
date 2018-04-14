@@ -11,8 +11,5 @@ repositories {
 
 dependencies {
 
-    compile group: 'org.processing', name: 'core', version: '3.3.6'
-    compile group: 'org.jogamp.jogl', name: 'jogl-all-main', version: '2.3.2'
-
-    compile group: 'org.joml', name: 'joml-mini', version: '1.8.0'
+    compile group: 'org.processing', name: 'core', version: '3.3.7'
 }
