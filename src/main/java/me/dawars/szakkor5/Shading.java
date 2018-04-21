@@ -49,7 +49,8 @@ public class Shading extends PApplet {
         //paraboloid = createParaboloid();
         //torus = createTorus(200,80);
 
-        sh = loadShader("szakkor5/frag_lambert.glsl","szakkor5/vertex_lambert.glsl");
+        //sh = loadShader("szakkor5/frag_lambert.glsl","szakkor5/vertex_lambert.glsl");
+        sh = loadShader("szakkor5/frag_blinn.glsl","szakkor5/vertex_blinn.glsl");
     }
 
 
@@ -191,6 +192,7 @@ public class Shading extends PApplet {
 
                 shape.fill(127,0,127);
                 PVector n0 = v0.normalize(null);
+                //shape.fill(n0.x * 255,n0.y * 255,n0.z * 255);
                 shape.normal(n0.x,n0.y,n0.z);
                 shape.vertex(v0.x,v0.y,v0.z);
 
@@ -206,6 +208,7 @@ public class Shading extends PApplet {
                 //shape.fill(115,40,115);
                 PVector n1 = v1.normalize(null);
                 shape.normal(n1.x,n1.y,n1.z);
+                //shape.fill(n1.x * 255,n1.y * 255,n1.z * 255);
                 shape.vertex(v1.x,v1.y,v1.z);
             }
         }
