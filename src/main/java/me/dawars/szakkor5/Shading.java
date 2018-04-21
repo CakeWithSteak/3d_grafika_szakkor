@@ -4,7 +4,7 @@ import processing.core.PApplet;
 import processing.core.PShape;
 import processing.core.PVector;
 import processing.core.PMatrix3D;
-import processing.opengl.PGraphicsOpenGL;
+import processing.opengl.PShader;
 
 
 public class Shading extends PApplet {
@@ -31,6 +31,8 @@ public class Shading extends PApplet {
     PVector cameraUp = new PVector(0,1,0);
     final float step = 2f;
     final float rStep = TAU / 200f;
+    PShader sh;
+    PVector lightDir = new PVector(1,-1,-1);
 
 
     PMatrix3D baseTransform = new PMatrix3D(
@@ -47,6 +49,7 @@ public class Shading extends PApplet {
         //paraboloid = createParaboloid();
         //torus = createTorus(200,80);
 
+        sh = loadShader("szakkor5/frag_lambert.glsl","szakkor5/vertex_lambert.glsl");
     }
 
 
@@ -54,6 +57,10 @@ public class Shading extends PApplet {
     public void draw() {
         background(0);
         translate(width/2,height/2);
+        lightDir = rotateAroundY(lightDir.x,lightDir.y,lightDir.z,TAU / 200);
+
+        sh.set("lightDir",lightDir);
+        shader(sh);
 
         shape(sphere);
     }
@@ -183,6 +190,8 @@ public class Shading extends PApplet {
                 );
 
                 shape.fill(127,0,127);
+                PVector n0 = v0.normalize(null);
+                shape.normal(n0.x,n0.y,n0.z);
                 shape.vertex(v0.x,v0.y,v0.z);
 
                 PVector v1 = rotateAroundY(
@@ -195,6 +204,8 @@ public class Shading extends PApplet {
                     shape.fill(115,40,115);
                 }*/
                 //shape.fill(115,40,115);
+                PVector n1 = v1.normalize(null);
+                shape.normal(n1.x,n1.y,n1.z);
                 shape.vertex(v1.x,v1.y,v1.z);
             }
         }
