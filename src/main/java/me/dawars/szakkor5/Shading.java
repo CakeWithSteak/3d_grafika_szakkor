@@ -1,4 +1,4 @@
-package me.dawars.szakkor2;
+package me.dawars.szakkor5;
 
 import processing.core.PApplet;
 import processing.core.PShape;
@@ -7,9 +7,9 @@ import processing.core.PMatrix3D;
 import processing.opengl.PGraphicsOpenGL;
 
 
-public class DrawShapes extends PApplet {
+public class Shading extends PApplet {
     public static void main(String[] args) {
-        PApplet.main(DrawShapes.class);
+        PApplet.main(Shading.class);
     }
 
     @Override
@@ -42,170 +42,20 @@ public class DrawShapes extends PApplet {
 
     @Override
     public void setup() {
-        sphere = createSphere(20);
-        cylinder = createCylinder(20,60);
+        sphere = createSphere(100);
+        //cylinder = createCylinder(20,60);
         //paraboloid = createParaboloid();
-        torus = createTorus(200,80);
+        //torus = createTorus(200,80);
 
     }
 
-    private void drawEnvironment() {
-        final int rows = 10;
-        final int cols = 3;
-        final float spacing = 40 + 60;
-
-        pushMatrix();
-        for(int i = 0;i < cols;++i) {
-            translate(spacing,0,0);
-            pushMatrix();
-            for(int k = 0;k < rows;++k) {
-                translate(0,0,-spacing);
-
-                shape(cylinder);
-
-                pushMatrix();
-                translate(0,-20,0);
-                shape(sphere);
-                popMatrix();
-            }
-            popMatrix();
-        }
-        popMatrix();
-    }
-
-
-    private void processInput() {
-        if(keyPressed) {
-            if(key != CODED) {
-                switch (key) {
-                    case 'W':
-                    case 'w':
-                        camera.add(PVector.mult(cameraDir,step));
-                        break;
-                    case 'S':
-                    case 's':
-                        camera.add(PVector.mult(cameraDir,-step));
-                        break;
-                    case 'D':
-                    case 'd':
-                        camera.add(cameraDir.cross(cameraUp).mult(step));
-                        break;
-                    case 'A':
-                    case 'a':
-                        camera.add(cameraDir.cross(cameraUp).mult(-step));
-                        break;
-                    case 'E':
-                    case 'e':
-                        camera.add(PVector.mult(cameraUp,-step));
-                        break;
-                    case 'Q':
-                    case 'q':
-                        camera.add(PVector.mult(cameraUp,step));
-                        break;
-
-                }
-            } else {
-                PMatrix3D rotation = new PMatrix3D();
-                switch(keyCode) {
-                    case LEFT://Positive Y rotation
-                        rotation.set(
-                                cos(rStep),0,sin(rStep),0,
-                                0,1,0,0,
-                                -sin(rStep),0,cos(rStep),0,
-                                0,0,0,1
-                        );
-                        break;
-                    case RIGHT://Negative Y
-                        rotation.rotateY(-rStep);
-                        break;
-                    case UP://Positive X
-                        rotation.set(
-                                1,0,0,0,
-                                0,cos(rStep),-sin(rStep),0,
-                                0,sin(rStep),cos(rStep),0,
-                                0,0,0,1
-                        );
-                        break;
-                    case DOWN://Negative X
-                        rotation.rotateX(-rStep);
-                        break;
-                    case CONTROL://Negative Z
-                        rotation.set(
-                                cos(-rStep),-sin(-rStep),0,0,
-                                sin(-rStep),cos(-rStep),0,0,
-                                0,0,1,0,
-                                0,0,0,1
-                        );
-                        break;
-                    case ALT://Positive Z
-                        rotation.rotateZ(rStep);
-                        break;
-                }
-
-                rotation.mult(cameraDir, cameraDir);
-                rotation.mult(cameraUp,cameraUp);
-            }
-        }
-    }
-
-    private PMatrix3D lookAt(PVector eye,PVector center,PVector up) {
-        PVector direction = PVector.sub(eye,center).normalize();
-        PVector right = up.cross(direction).normalize();
-        //PVector up2 = direction.cross(right).normalize();
-
-        /*PMatrix3D view = new PMatrix3D(
-                right.x,up.x,direction.x,-eye.x,
-                right.y,up.y,direction.y,-eye.y,
-                right.z,up.z,direction.z,-eye.z,
-                0,0,0,1
-        );*/
-
-        PMatrix3D view = new PMatrix3D(//Why?
-                right.x,right.y,right.z,0,
-                up.x,up.y,up.z,0,
-                direction.x,direction.y,direction.z,0,
-                0,0,0,1
-        );
-        view.translate(-eye.x,-eye.y,-eye.z);
-        return view;
-    }
-
-    private PMatrix3D getProjectionMatrix(float fovy,float aspect,float near,float far) {
-        float top = tan(fovy/2)*near;
-        float bottom = -top;
-        float right = aspect*top;
-        float left = -right;
-
-        PMatrix3D proj = new PMatrix3D(
-                (2*near)/(right-left),0,(right+left)/(right - left),0,
-                0,-(2*near)/(top-bottom),(top+bottom)/(top-bottom),0,
-                0,0,-(far + near)/(far - near),-(2*far*near)/(far - near),
-                0,0,-1,0
-        );
-        return proj;
-    }
 
     @Override
     public void draw() {
         background(0);
+        translate(width/2,height/2);
 
-        processInput();
-        PVector center = PVector.add(camera, cameraDir);
-        //camera(camera.x,camera.y,camera.z, center.x, center.y, center.z, cameraUp.x, cameraUp.y, cameraUp.z);
-
-
-        final PMatrix3D view = lookAt(camera, center, cameraUp);
-        final PMatrix3D proj = getProjectionMatrix(radians(90),width/height,0.01f,100000);
-
-        PGraphicsOpenGL og = (PGraphicsOpenGL) this.g;
-        og.modelview.set(view);
-        og.modelviewInv.set(view);
-        og.modelviewInv.invert();
-        og.projection.set(proj);
-        og.updateProjmodelview();
-
-
-        drawEnvironment();
+        shape(sphere);
     }
 
     private PShape createTorus(float innerRadius,float outerRadius) {
@@ -332,8 +182,7 @@ public class DrawShapes extends PApplet {
                         radians(hAngle)
                 );
 
-                //shape.fill(127,0,127);
-                shape.fill(0,70,0);//Green for trees
+                shape.fill(127,0,127);
                 shape.vertex(v0.x,v0.y,v0.z);
 
                 PVector v1 = rotateAroundY(
@@ -357,7 +206,7 @@ public class DrawShapes extends PApplet {
     /**
      * Rotates a coord around the Y axis
      *  @param angle Angle in radians
-    */
+     */
     private PVector rotateAroundY(float x,float y,float z,float angle) {
         PVector res = new PVector();
         res.x = x * cos(angle) - z * sin(angle);
