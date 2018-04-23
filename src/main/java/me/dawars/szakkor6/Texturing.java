@@ -1,21 +1,21 @@
-package me.dawars.szakkor5;
+package me.dawars.szakkor6;
 
 import processing.core.PApplet;
 import processing.core.PShape;
 import processing.core.PVector;
 import processing.core.PMatrix3D;
 import processing.opengl.PShader;
+import processing.core.PImage;
 
 
-public class Shading extends PApplet {
+public class Texturing extends PApplet {
     public static void main(String[] args) {
-        PApplet.main(Shading.class);
+        PApplet.main(Texturing.class);
     }
 
     @Override
     public void settings() {
         size(400, 400, P3D);
-        //g = (PGraphicsOpenGL) createGraphics(400,400);
     }
 
     PShape triangle;
@@ -33,6 +33,7 @@ public class Shading extends PApplet {
     final float rStep = TAU / 200f;
     PShader sh;
     PVector lightDir = new PVector(1,-1,-1);
+    PImage tex;
 
 
     PMatrix3D baseTransform = new PMatrix3D(
@@ -44,13 +45,18 @@ public class Shading extends PApplet {
 
     @Override
     public void setup() {
+        tex = loadImage("szakkor6/debug.jpg");
+        textureMode(NORMAL);
+        textureWrap(REPEAT);
+
         sphere = createSphere(100);
-        //cylinder = createCylinder(20,60);
+        //cylinder = createCylinder(60,200);
         //paraboloid = createParaboloid();
         //torus = createTorus(200,80);
 
         //sh = loadShader("szakkor5/frag_lambert.glsl","szakkor5/vertex_lambert.glsl");
-        sh = loadShader("szakkor5/frag_blinn.glsl","szakkor5/vertex_blinn.glsl");
+       // sh = loadShader("szakkor5/frag_blinn.glsl","szakkor5/vertex_blinn.glsl");
+        sh = loadShader("szakkor6/frag.glsl","szakkor6/vertex.glsl");
     }
 
 
@@ -58,9 +64,11 @@ public class Shading extends PApplet {
     public void draw() {
         background(0);
         translate(width/2,height/2);
-        lightDir = rotateAroundY(lightDir.x,lightDir.y,lightDir.z,TAU / 200);
+        rotateY(rotation);
+        rotation += TAU / 500;
+        //lightDir = rotateAroundY(lightDir.x,lightDir.y,lightDir.z,TAU / 200);
 
-        sh.set("lightDir",lightDir);
+        //sh.set("lightDir",lightDir);
         shader(sh);
 
         shape(sphere);
@@ -178,6 +186,8 @@ public class Shading extends PApplet {
 
         shape.beginShape(TRIANGLE_STRIP);
         shape.noStroke();
+        if(tex != null)
+            shape.texture(tex);
 
         float step = 360 / quality;
         for(float hAngle = 0;hAngle < 180;hAngle += step) {
@@ -238,6 +248,7 @@ public class Shading extends PApplet {
 
         shape.beginShape(TRIANGLE_STRIP);
         shape.noStroke();
+        shape.texture(tex);
 
         int step = 360 / quality;
         for(int angle = 0;angle <= 360;angle += step) {
@@ -245,10 +256,11 @@ public class Shading extends PApplet {
             float z = radius * sin(radians(angle));
 
             //shape.fill(100,0,100);
-            shape.fill(77, 38, 0);//brown for tree
-            shape.vertex(x,0,z);
+            //shape.fill(77, 38, 0);
+            float u = 1 - angle / 360.f;
+            shape.vertex(x,-height / 2.f,z,u,0);
             //shape.fill(0,100,0);
-            shape.vertex(x,height,z);
+            shape.vertex(x,height / 2.f,z,u,1); //TODO:Shouldn't this map the top of the texture to the bottom of the cylinder?
         }
 
         shape.endShape();

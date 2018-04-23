@@ -325,28 +325,35 @@ public class DrawShapes extends PApplet {
         for(float hAngle = 0;hAngle < 180;hAngle += step) {
             //Draw an arc of the sphere
             for(float vAngle = 0;vAngle <= 360;vAngle += step) {
+                float rot0 = (vAngle > 90 && vAngle < 270) ? hAngle - step : hAngle;
+                float rot1  = (vAngle > 90 && vAngle < 270) ? step : -step;
                 PVector v0 = rotateAroundY(
                         radius * cos(radians(vAngle)),
                         radius * sin(radians(vAngle)),
                         0,
-                        radians(hAngle)
+                        radians(rot0)
                 );
 
-                //shape.fill(127,0,127);
-                shape.fill(0,70,0);//Green for trees
-                shape.vertex(v0.x,v0.y,v0.z);
+                shape.fill(127,0,127);
+                PVector n0 = v0.normalize(null);
+                //shape.fill(n0.x * 255,n0.y * 255,n0.z * 255);
+                shape.normal(n0.x,n0.y,n0.z);
+                shape.vertex(v0.x,v0.y,v0.z,1 - hAngle / 180.f,vAngle / 360.f);
 
                 PVector v1 = rotateAroundY(
                         v0.x,
                         v0.y,
                         v0.z,
-                        radians(step)
+                        radians(rot1)
                 );
                 /*if(vAngle % 15 == 0) { //Stripes for visibility
                     shape.fill(115,40,115);
                 }*/
                 //shape.fill(115,40,115);
-                shape.vertex(v1.x,v1.y,v1.z);
+                PVector n1 = v1.normalize(null);
+                shape.normal(n1.x,n1.y,n1.z);
+                //shape.fill(n1.x * 255,n1.y * 255,n1.z * 255);
+                shape.vertex(v1.x,v1.y,v1.z,1 - (hAngle + step) / 180.f,vAngle / 360.f);
             }
         }
 
