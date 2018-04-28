@@ -206,7 +206,7 @@ public class Texturing extends PApplet {
                 PVector n0 = v0.normalize(null);
                 //shape.fill(n0.x * 255,n0.y * 255,n0.z * 255);
                 shape.normal(n0.x,n0.y,n0.z);
-                shape.vertex(v0.x,v0.y,v0.z,1 - hAngle / 180.f,vAngle / 360.f);
+                shape.vertex(v0.x,v0.y,v0.z);
 
                 PVector v1 = rotateAroundY(
                         v0.x,
@@ -221,7 +221,7 @@ public class Texturing extends PApplet {
                 PVector n1 = v1.normalize(null);
                 shape.normal(n1.x,n1.y,n1.z);
                 //shape.fill(n1.x * 255,n1.y * 255,n1.z * 255);
-                shape.vertex(v1.x,v1.y,v1.z,1 - (hAngle + step) / 180.f,vAngle / 360.f);
+                shape.vertex(v1.x,v1.y,v1.z);
             }
         }
 
@@ -260,7 +260,7 @@ public class Texturing extends PApplet {
             float u = 1 - angle / 360.f;
             shape.vertex(x,-height / 2.f,z,u,0);
             //shape.fill(0,100,0);
-            shape.vertex(x,height / 2.f,z,u,1); //TODO:Shouldn't this map the top of the texture to the bottom of the cylinder?
+            shape.vertex(x,height / 2.f,z,u,1);
         }
 
         shape.endShape();
