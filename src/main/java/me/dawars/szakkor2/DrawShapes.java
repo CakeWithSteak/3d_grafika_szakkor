@@ -108,34 +108,19 @@ public class DrawShapes extends PApplet {
                 PMatrix3D rotation = new PMatrix3D();
                 switch(keyCode) {
                     case LEFT://Positive Y rotation
-                        rotation.set(
-                                cos(rStep),0,sin(rStep),0,
-                                0,1,0,0,
-                                -sin(rStep),0,cos(rStep),0,
-                                0,0,0,1
-                        );
+                        rotation.rotateY(rStep);
                         break;
                     case RIGHT://Negative Y
                         rotation.rotateY(-rStep);
                         break;
                     case UP://Positive X
-                        rotation.set(
-                                1,0,0,0,
-                                0,cos(rStep),-sin(rStep),0,
-                                0,sin(rStep),cos(rStep),0,
-                                0,0,0,1
-                        );
+                        rotation.rotateX(rStep);
                         break;
                     case DOWN://Negative X
                         rotation.rotateX(-rStep);
                         break;
                     case CONTROL://Negative Z
-                        rotation.set(
-                                cos(-rStep),-sin(-rStep),0,0,
-                                sin(-rStep),cos(-rStep),0,0,
-                                0,0,1,0,
-                                0,0,0,1
-                        );
+                        rotation.rotateZ(-rStep);
                         break;
                     case ALT://Positive Z
                         rotation.rotateZ(rStep);
@@ -191,10 +176,10 @@ public class DrawShapes extends PApplet {
 
         processInput();
         PVector center = PVector.add(camera, cameraDir);
-        //camera(camera.x,camera.y,camera.z, center.x, center.y, center.z, cameraUp.x, cameraUp.y, cameraUp.z);
+        camera(camera.x,camera.y,camera.z, center.x, center.y, center.z, cameraUp.x, cameraUp.y, cameraUp.z);
 
 
-        final PMatrix3D view = lookAt(camera, center, cameraUp);
+        /*final PMatrix3D view = lookAt(camera, center, cameraUp);
         final PMatrix3D proj = getProjectionMatrix(radians(90),width/height,0.01f,100000);
 
         PGraphicsOpenGL og = (PGraphicsOpenGL) this.g;
@@ -202,7 +187,7 @@ public class DrawShapes extends PApplet {
         og.modelviewInv.set(view);
         og.modelviewInv.invert();
         og.projection.set(proj);
-        og.updateProjmodelview();
+        og.updateProjmodelview();*/
 
 
         drawEnvironment();
