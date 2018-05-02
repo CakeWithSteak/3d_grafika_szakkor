@@ -9,7 +9,7 @@ uniform sampler2D texture;
 uniform int repeat;
 
 uniform sampler2D exponent;
-uniform bool hasExponent;
+uniform bool hasExponent;//Decides whether to use the exponent map or a constant shininess value
 uniform vec3 lightDiffuse[numLights];
 
 varying vec4 vertTexCoord;
@@ -21,8 +21,8 @@ varying vec3 distance[numLights];
 
 vec4 bpShade(vec4 baseColor) {
     vec4 ambientColor = baseColor;
-    vec4 diffuseColor = vec4(0,0,0,1);
-    vec4 specularColor = vec4(1,1,1,1);
+    vec4 diffuseColor = vec4(0,0,0,1);//The diffuse color is going to be a mix of each light's color.
+    vec4 specularColor = vec4(1,1,1,1);//The specular hightlight is always going to be white.
 
 
     float ambientReflection = .05;
@@ -50,7 +50,7 @@ vec4 bpShade(vec4 baseColor) {
 
         //Diffuse
         float diffuseTerm = max(0,dot(lightDir, realFragNormal)) * intensity * diffuseReflection;
-        diffuseColor += vec4(lightDiffuse[i] * diffuseTerm,1) * baseColor;
+        diffuseColor += vec4(lightDiffuse[i] * diffuseTerm,1) * baseColor;//Weird, but looks good enough
 
 
         //Specular
@@ -60,7 +60,7 @@ vec4 bpShade(vec4 baseColor) {
     }
 
     return vec4(
-    ((ambientTerm * ambientColor) + (diffuseColor) + (specularTerm * specularColor)).rgb,1
+    ((ambientTerm * ambientColor) + diffuseColor + (specularTerm * specularColor)).rgb,1
     );
 }
 
