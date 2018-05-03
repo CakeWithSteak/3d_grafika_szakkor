@@ -72,27 +72,30 @@ public class ModelRender extends PApplet {
 
                 }
             } else {
-                PMatrix3D rotation = new PMatrix3D();
+                PMatrix3D rotation;
                 switch(keyCode) {
                     case LEFT://Positive Y rotation
-                        rotation.rotateY(rStep);
+                        rotation = rotateAroundAxis(cameraUp,rStep);
                         break;
                     case RIGHT://Negative Y
-                        rotation.rotateY(-rStep);
+                        rotation = rotateAroundAxis(cameraUp,-rStep);
                         break;
                     case UP://Positive X
-                        rotation.rotateX(rStep);
+                        rotation = rotateAroundAxis(cameraUp.cross(cameraDir),rStep);
                         break;
                     case DOWN://Negative X
-                        rotation.rotateX(-rStep);
+                        rotation = rotateAroundAxis(cameraUp.cross(cameraDir),-rStep);
                         break;
                     case CONTROL://Negative Z
-                        rotation.rotateZ(-rStep);
+                        rotation = rotateAroundAxis(cameraDir,rStep);
                         break;
                     case ALT://Positive Z
-                        rotation.rotateZ(rStep);
+                        rotation = rotateAroundAxis(cameraDir,-rStep);
                         break;
+                    default:
+                        rotation = new PMatrix3D();
                 }
+
 
                 rotation.mult(cameraDir, cameraDir);
                 rotation.mult(cameraUp,cameraUp);
@@ -140,8 +143,8 @@ public class ModelRender extends PApplet {
         popMatrix();
 
         pushMatrix();
-        pointLight(0, 0, 255, x+80,y-400,z+10);
-        translate(x+80,y-400,z+10);
+        pointLight(0, 0, 255, x+200,y-400,z+10);
+        translate(x+200,y-400,z+10);
         sphere(1);
         popMatrix();
 
@@ -203,6 +206,24 @@ public class ModelRender extends PApplet {
             vertex(hs,-hs,i, 1,1);
             endShape();
         }
+    }
+
+    /**
+     * Returns a matrix thet rotates space around a given axis
+     * https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
+     *
+     * @param u A vector pointing in the direction of the axis
+     * @param angle The angle to rotate by
+     */
+    PMatrix3D rotateAroundAxis(PVector u,float angle) {
+        u.normalize();
+        float a = 1 - cos(angle);
+        return new PMatrix3D(
+                cos(angle) + u.x*u.x*a,u.x*u.y*a - u.z*sin(angle),u.x*u.z*a + u.y*sin(angle),0,
+                u.y*u.x*a + u.z*sin(angle),cos(angle) + u.y*u.y*a,u.y*u.z*a - u.x*sin(angle),0,
+                u.z*u.x*a - u.y*sin(angle),u.z*u.y*a+u.x*sin(angle),cos(angle)+u.z*u.z*a,0,
+                0,0,0,1
+        );
     }
 
     /**
