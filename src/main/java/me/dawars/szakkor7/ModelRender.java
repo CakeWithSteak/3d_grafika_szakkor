@@ -13,7 +13,7 @@ public class ModelRender extends PApplet {
     PVector camera = new PVector(0,-100,-300);
     PVector cameraDir = new PVector(0,0,1);
     PVector cameraUp = new PVector(0,1,0);
-    final float step = 2f;
+    final float step = 5f;
     final float rStep = TAU / 200f;
 
     public static void main(String[] args) {

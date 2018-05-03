@@ -50,7 +50,7 @@ vec4 bpShade(vec4 baseColor) {
 
         //Diffuse
         float diffuseTerm = max(0,dot(lightDir, realFragNormal)) * intensity * diffuseReflection;
-        diffuseColor += vec4(lightDiffuse[i] * diffuseTerm,1) * baseColor;//Weird, but looks good enough
+        diffuseColor += vec4(lightDiffuse[i] * diffuseTerm,1) * baseColor / 2;//Weird, but looks good enough
 
 
         //Specular
