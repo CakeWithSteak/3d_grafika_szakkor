@@ -71,6 +71,14 @@ public class EnvMapping extends PApplet {
                 loadImage("szakkor9/witcher_ny.png"),
                 loadImage("szakkor9/witcher_pz.png"),
                 loadImage("szakkor9/witcher_nz.png"),
+
+                //Image based rendering skybox
+                loadImage("szakkor9/witcher_px.png"),
+                loadImage("szakkor9/witcher_nx.png"),
+                loadImage("szakkor9/witcher_py.png"),
+                loadImage("szakkor9/witcher_ny.png"),
+                loadImage("szakkor9/witcher_pz.png"),
+                loadImage("szakkor9/witcher_nz.png"),
         };
 
         for (PImage img : cubeMap) {
@@ -79,8 +87,10 @@ public class EnvMapping extends PApplet {
 
 
         PGL pgl = beginPGL(); // advanced OpenGl
-        IntBuffer envMapTextureID = IntBuffer.allocate(1);
-        pgl.genTextures(1, envMapTextureID);
+        IntBuffer envMapTextureID = IntBuffer.allocate(2);
+        pgl.genTextures(2, envMapTextureID);
+
+        //Skybox
         pgl.activeTexture(PGL.TEXTURE1);
         pgl.enable(PGL.TEXTURE_CUBE_MAP);
         pgl.bindTexture(PGL.TEXTURE_CUBE_MAP, envMapTextureID.get(0));
@@ -92,7 +102,7 @@ public class EnvMapping extends PApplet {
 
 
         // put the textures in the cubeMap
-        for (int i = 0; i < cubeMap.length; i++) {
+        for (int i = 0; i < 6; i++) {
 //            cubeMap[i].resize(256, 256); // for performance
 //            cubeMap[i].resize(20, 20); // for smooth reflections
 
@@ -103,11 +113,33 @@ public class EnvMapping extends PApplet {
             pgl.texImage2D(PGL.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, PGL.RGBA, w, h, 0, PGL.RGBA, PGL.UNSIGNED_BYTE, java.nio.IntBuffer.wrap(pix));
         }
 
+        skyboxShader.set("cubemap", 1);
+
+        pgl.activeTexture(PGL.TEXTURE2);
+        pgl.bindTexture(PGL.TEXTURE_CUBE_MAP, envMapTextureID.get(1));
+        pgl.texParameteri(PGL.TEXTURE_CUBE_MAP, PGL.TEXTURE_WRAP_S, PGL.CLAMP_TO_EDGE);
+        pgl.texParameteri(PGL.TEXTURE_CUBE_MAP, PGL.TEXTURE_WRAP_T, PGL.CLAMP_TO_EDGE);
+        pgl.texParameteri(PGL.TEXTURE_CUBE_MAP, PGL.TEXTURE_WRAP_R, PGL.CLAMP_TO_EDGE);
+        pgl.texParameteri(PGL.TEXTURE_CUBE_MAP, PGL.TEXTURE_MIN_FILTER, PGL.LINEAR);
+        pgl.texParameteri(PGL.TEXTURE_CUBE_MAP, PGL.TEXTURE_MAG_FILTER, PGL.LINEAR);
+
+
+        // put the textures in the cubeMap
+        for (int i = 6; i < cubeMap.length; i++) {
+//            cubeMap[i].resize(256, 256); // for performance
+            cubeMap[i].resize(20, 20); // for smooth reflections
+
+            int w = cubeMap[i].width;
+            int h = cubeMap[i].height;
+            cubeMap[i].loadPixels();
+            int[] pix = cubeMap[i].pixels;
+            pgl.texImage2D(PGL.TEXTURE_CUBE_MAP_POSITIVE_X + (i % 6), 0, PGL.RGBA, w, h, 0, PGL.RGBA, PGL.UNSIGNED_BYTE, java.nio.IntBuffer.wrap(pix));
+        }
+
+        reflectShader.set("cubemap", 2);
         endPGL();
 
         // Load cubemap shader.
-        reflectShader.set("cubemap", 1);
-        skyboxShader.set("cubemap", 1);
 
         pg = (PGraphicsOpenGL) this.g;
     }
