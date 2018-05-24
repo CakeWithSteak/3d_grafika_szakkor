@@ -114,6 +114,7 @@ public class EnvMapping extends PApplet {
         }
 
         skyboxShader.set("cubemap", 1);
+        reflectShader.set("cubemap", 1);
 
         pgl.activeTexture(PGL.TEXTURE2);
         pgl.bindTexture(PGL.TEXTURE_CUBE_MAP, envMapTextureID.get(1));
@@ -136,7 +137,7 @@ public class EnvMapping extends PApplet {
             pgl.texImage2D(PGL.TEXTURE_CUBE_MAP_POSITIVE_X + (i % 6), 0, PGL.RGBA, w, h, 0, PGL.RGBA, PGL.UNSIGNED_BYTE, java.nio.IntBuffer.wrap(pix));
         }
 
-        reflectShader.set("cubemap", 2);
+        reflectShader.set("iblCubemap", 2);
         endPGL();
 
         // Load cubemap shader.
@@ -183,8 +184,8 @@ public class EnvMapping extends PApplet {
         reflectShader.set("viewInv", pg.cameraInv);
         reflectShader.set("cameraPos", pg.modelviewInv.m03, pg.modelviewInv.m13, pg.modelviewInv.m23);
 
-        //shape(sphere);
-        shape(radioShape);
+        shape(sphere);
+        //shape(radioShape);
 
         angle += 0.005f;
     }

@@ -2,6 +2,7 @@ const int numLights = 1;
 
 uniform samplerCube cubemap;
 uniform sampler2D texture;
+uniform samplerCube iblCubemap;
 uniform vec3 lightDiffuse[numLights];
 uniform mat4 viewInv;
 //uniform vec3 cameraPos;
@@ -18,8 +19,11 @@ in vec3 distance[numLights];
 const bool hasExponent = false;
 uniform sampler2D exponent; //Unused
 
-const float refMix = .0;
-const float iblFactor = 0.1;
+const float refMix = 1;
+const float iblFactor = 0.0;
+
+const float mixOffset = 0.003;
+
 
 vec4 calcLightFX() {
     //Camera space
@@ -28,26 +32,47 @@ vec4 calcLightFX() {
     //World space
     vec3 reflection = mat3(viewInv) * reflect(incident,normal);
 
-    const float relativeIOR = 1/1.33;
-    const float offset = 0.005f;
-    vec3 tR = mat3(viewInv) * refract(incident,normal,relativeIOR + offset);
+    const float relativeIOR = 1/1.08;
+
+   /* vec3 tR = mat3(viewInv) * refract(incident,normal,relativeIOR + mixOffset);
     vec3 tG = mat3(viewInv) * refract(incident,normal,relativeIOR);
-    vec3 tB = mat3(viewInv) * refract(incident,normal,relativeIOR - offset);
+    vec3 tB = mat3(viewInv) * refract(incident,normal,relativeIOR - mixOffset);*/
+    vec3 tR = mat3(viewInv) * refract(incident,normal,relativeIOR);
+    vec3 tY = mat3(viewInv) * refract(incident,normal,relativeIOR + mixOffset * 1);
+    vec3 tG = mat3(viewInv) * refract(incident,normal,relativeIOR + mixOffset * 2);
+    vec3 tC = mat3(viewInv) * refract(incident,normal,relativeIOR + mixOffset * 3);
+    vec3 tB = mat3(viewInv) * refract(incident,normal,relativeIOR + mixOffset * 4);
+    vec3 tV = mat3(viewInv) * refract(incident,normal,relativeIOR + mixOffset * 5);
 
+    float cR = texture(cubemap,tR).r / 2;
+    float cY = (texture(cubemap,tY).r * 2 +
+                texture(cubemap,tY).g * 2 -
+                texture(cubemap,tY).b) / 6;
+    float cG = texture(cubemap,tG).g / 2;
+    float cC = (texture(cubemap,tC).g * 2 +
+                    texture(cubemap,tC).b * 2 -
+                    texture(cubemap,tC).r) / 6;
+    float cB = texture(cubemap,tB).b / 2;
+    float cV = (texture(cubemap,tV).b * 2 +
+                    texture(cubemap,tV).r * 2 -
+                    texture(cubemap,tV).g) / 6;
 
-    /*float fresnel = clamp(dot(normal,-incident),0f,1f);
-    fresnel = pow(fresnel,1.55f);
-    if(length(tG) == 0) {
+    float fresnel = clamp(dot(normal,-incident),0f,1f);
+    fresnel = pow(fresnel,.1f);
+    if(length(tR) == 0) {
         fresnel = 0;
-    }*/
-    float fresnel = 0;  //Radios only reflect light
+    }
+    //float fresnel = 1;  //Radios only reflect light
 
     vec3 reflectColor = texture(cubemap,reflection).rgb;
 
     vec3 refractColor;
-    refractColor.r = texture(cubemap,tR).r;
+    refractColor.r = cR + (2 * cV + 2 * cY - cC) / 3;
+    refractColor.g = cG + (2 * cY + 2 * cC - cV) / 3;
+    refractColor.b = cB + (2 * cC + 2 * cV - cY) / 3;
+    /*refractColor.r = texture(cubemap,tR).r;
     refractColor.g = texture(cubemap,tG).g;
-    refractColor.b = texture(cubemap,tB).b;
+    refractColor.b = texture(cubemap,tB).b;*/
 
     vec3 color = mix(reflectColor,refractColor,fresnel);
 
@@ -95,7 +120,7 @@ vec4 bpShade(vec4 baseColor) {
         specularTerm += pow(thisSpecularTerm,shininess) * intensity * specularReflection;
     }
 
-    diffuseColor += vec4(texture(cubemap,realFragNormal).rgb,1) * iblFactor;
+    diffuseColor += vec4(texture(iblCubemap,realFragNormal).rgb,1) * iblFactor;
 
     return vec4(
     ((ambientTerm * ambientColor) + diffuseColor + (specularTerm * specularColor)).rgb,1
