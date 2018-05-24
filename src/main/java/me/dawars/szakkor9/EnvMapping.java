@@ -48,17 +48,21 @@ public class EnvMapping extends PApplet {
     @Override
     public void setup() {
         textureMode(NORMAL);
-//        noStroke(); // todo uncomment
+        noStroke(); // todo uncomment
 
         cube = createShape(BOX, 5000); // skybox
         sphere = createShape(SPHERE, 50); // test object
 
         radioShape = loadShape("models/radio/radio.obj");
         radioTexture = loadImage("models/radio/radio.png");
-//        radioShape.setTexture(radioTexture);  // doesn't work on mac yet
+        PImage radioExponent = loadImage("models/radio/radio_exponent.png");
+        //reflectShader.set("exponent",radioExponent);  //Doesnt't work.
+
+        radioShape.setTexture(radioTexture);  // doesn't work on mac yet
 
         skyboxShader = loadShader("szakkor9/skybox_frag.glsl", "szakkor9/skybox_vert.glsl");
         reflectShader = loadShader("szakkor9/reflect_frag.glsl", "szakkor9/reflect_vert.glsl");
+
 
         cubeMap = new PImage[]{
                 loadImage("szakkor9/witcher_px.png"),
@@ -147,7 +151,7 @@ public class EnvMapping extends PApplet {
         reflectShader.set("viewInv", pg.cameraInv);
         reflectShader.set("cameraPos", pg.modelviewInv.m03, pg.modelviewInv.m13, pg.modelviewInv.m23);
 
-        shape(sphere);
+        //shape(sphere);
         shape(radioShape);
 
         angle += 0.005f;
