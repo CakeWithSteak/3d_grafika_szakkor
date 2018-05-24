@@ -22,5 +22,6 @@ void main() {
 
     vec3 color = lambertian * diffuseColor;
 
-    gl_FragColor = vec4(color, 1);
+    //gl_FragColor = vec4(color, 1);
+    gl_FragColor = vec4(normal,1);
 }

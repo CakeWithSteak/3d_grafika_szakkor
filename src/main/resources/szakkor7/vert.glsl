@@ -21,10 +21,10 @@ void main() {
      gl_Position = transform * position;
      vertTexCoord = texMatrix * texCoord;
      ecNormal = normalMatrix * normal;
-     vec4 ecPostiton = (modelview * position);
-     ecViewDir = -(normalize(ecPostiton)).xyz;
+     vec4 ecPosition = (modelview * position);
+     ecViewDir = -(normalize(ecPosition)).xyz;
      for(int i = 0;i < numLights;++i) {
-        distance[i] = (lightPosition[i] - ecPostiton).xyz;
+        distance[i] = (lightPosition[i] - ecPosition).xyz;
         ecLightDir[i] = normalize(distance[i]);
      }
 

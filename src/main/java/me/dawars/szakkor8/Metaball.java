@@ -30,7 +30,7 @@ public class Metaball extends PApplet {
     public void setup() {
         blobs = new ArrayList<>();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 3; i++) {
             blobs.add(new Blobs());
         }
 
@@ -72,8 +72,8 @@ public class Metaball extends PApplet {
 
         final float THRESHOLD = 1;
 
-        PShape sh2 = renderVoxelBlobs(field, THRESHOLD);
-//        PShape sh = renderMarchingCubes(field, THRESHOLD);
+ //       PShape sh2 = renderVoxelBlobs(field, THRESHOLD);
+        PShape sh = renderMarchingCubes(field, THRESHOLD);
 
 
         translate(-scale / 2, -scale / 2, -scale / 2);
@@ -83,8 +83,8 @@ public class Metaball extends PApplet {
 
 
         shader(voxelShader);
-//        shape(sh);
-        shape(sh2);
+        shape(sh);
+ //       shape(sh2);
 
         angle += 0.01;
     }
