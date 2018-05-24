@@ -18,7 +18,8 @@ in vec3 distance[numLights];
 const bool hasExponent = false;
 uniform sampler2D exponent; //Unused
 
-const float refMix = .05;
+const float refMix = .0;
+const float iblFactor = 0.1;
 
 vec4 calcLightFX() {
     //Camera space
@@ -93,6 +94,8 @@ vec4 bpShade(vec4 baseColor) {
         float thisSpecularTerm = max(0,dot(halfAngle, realFragNormal));
         specularTerm += pow(thisSpecularTerm,shininess) * intensity * specularReflection;
     }
+
+    diffuseColor += vec4(texture(cubemap,realFragNormal).rgb,1) * iblFactor;
 
     return vec4(
     ((ambientTerm * ambientColor) + diffuseColor + (specularTerm * specularColor)).rgb,1
