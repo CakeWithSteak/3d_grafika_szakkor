@@ -19,10 +19,10 @@ in vec3 distance[numLights];
 const bool hasExponent = false;
 uniform sampler2D exponent; //Unused
 
-const float refMix = 1;
-const float iblFactor = 0.0;
+const float refMix = .6;
+const float iblFactor = 0.2;
 
-const float mixOffset = 0.003;
+const float mixOffset = .003;
 
 
 vec4 calcLightFX() {
@@ -62,7 +62,7 @@ vec4 calcLightFX() {
     if(length(tR) == 0) {
         fresnel = 0;
     }
-    //float fresnel = 1;  //Radios only reflect light
+    //float fresnel = 0;  //Radios only reflect light
 
     vec3 reflectColor = texture(cubemap,reflection).rgb;
 
