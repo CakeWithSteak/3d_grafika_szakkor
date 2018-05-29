@@ -22,7 +22,8 @@ varying vec3 distance[numLights];
 vec4 bpShade(vec4 baseColor) {
     vec4 ambientColor = baseColor;
     vec4 diffuseColor = vec4(0,0,0,1);//The diffuse color is going to be a mix of each light's color.
-    vec4 specularColor = vec4(1,1,1,1);//The specular hightlight is always going to be white.
+   // vec4 specularColor = vec4(1,1,1,1);//The specular hightlight is always going to be white.
+   vec4 specularColor = vec4(0,0,0,1);
 
 
     float ambientReflection = .05;
@@ -36,7 +37,7 @@ vec4 bpShade(vec4 baseColor) {
     //Ambient
     float ambientTerm = ambientReflection;
 
-    float specularTerm = 0;
+    //float specularTerm = 0;
     float shininess = hasExponent ? texture2D(exponent,vertTexCoord.st).r * 149 + 1 : 10;
 
 
@@ -56,11 +57,12 @@ vec4 bpShade(vec4 baseColor) {
         //Specular
         vec3 halfAngle = normalize(lightDir + viewDir);
         float thisSpecularTerm = max(0,dot(halfAngle, realFragNormal));
-        specularTerm += pow(thisSpecularTerm,shininess) * intensity * specularReflection;
+        thisSpecularTerm = pow(thisSpecularTerm,shininess) * intensity * specularReflection;
+        specularColor += vec4(lightDiffuse[i] * thisSpecularTerm,1);
     }
 
     return vec4(
-    ((ambientTerm * ambientColor) + diffuseColor + (specularTerm * specularColor)).rgb,1
+    ((ambientTerm * ambientColor) + diffuseColor + specularColor).rgb,1
     );
 }
 
